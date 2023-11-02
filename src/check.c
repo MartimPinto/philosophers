@@ -6,7 +6,7 @@
 /*   By: mcarneir <mcarneir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 15:19:48 by mcarneir          #+#    #+#             */
-/*   Updated: 2023/10/11 12:29:17 by mcarneir         ###   ########.fr       */
+/*   Updated: 2023/10/20 14:54:30 by mcarneir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	is_full(t_philo *philo)
 {
-	if (philo->eat_cont >= philo->data->meals_num 
+	if (philo->eat_cont >= philo->data->meals_num
 		&& philo->data->meals_num != 0 && !philo->full)
 	{
 		philo->data->philos_full++;
@@ -34,10 +34,7 @@ bool	is_dead(t_philo *philo)
 	if (get_time() >= philo->time_to_die || philo->data->finished)
 	{
 		if (!philo->data->finished)
-		{
-			messages(DIED, philo);
-			philo->data->dead++;
-		}
+			messages(philo, DEATH);
 		philo->data->finished = true;
 	}
 	pthread_mutex_lock(&philo->data->lock);
@@ -53,10 +50,10 @@ bool	is_one(t_philo *philo)
 {
 	if (philo->data->philo_num == 1)
 	{
-		pthread_mutex_lock(philo->l_fork);
-		messages(TAKE_FORKS, philo);
-		pthread_mutex_unlock(philo->l_fork);
-		messages(THINKING, philo);
+		pthread_mutex_lock(&philo->data->forks[philo->l_fork]);
+		messages(philo, FORK);
+		pthread_mutex_unlock(&philo->data->forks[philo->l_fork]);
+		messages(philo, THINKING);
 		while (!is_dead(philo))
 			;
 		return (true);

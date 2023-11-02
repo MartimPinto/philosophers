@@ -6,7 +6,7 @@
 /*   By: mcarneir <mcarneir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 13:13:58 by mcarneir          #+#    #+#             */
-/*   Updated: 2023/10/11 15:38:12 by mcarneir         ###   ########.fr       */
+/*   Updated: 2023/10/20 15:02:19 by mcarneir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,6 @@ void	init_forks(t_data *data)
 	i = -1;
 	while (++i < data->philo_num)
 		pthread_mutex_init(&data->forks[i], NULL);
-	i = 0;
-	data->philos[0].l_fork = &data->forks[0];
-	data->philos[0].r_fork = &data->forks[data->philo_num - 1];
-	i = 1;
-	while (i < data->philo_num)
-	{
-		data->philos[i].l_fork = &data->forks[i];
-		data->philos[i].r_fork = &data->forks[i - 1];
-		i++;
-	}
 }
 
 void	init_philos(t_data *data)
@@ -51,6 +41,9 @@ void	init_philos(t_data *data)
 		data->philos[i].data = data;
 		data->philos[i].id = i + 1;
 		data->philos[i].time_to_die = data->death_time;
+		data->philos[i].l_fork = i;
+		data->philos[i].r_fork = (i + 1) % data->philo_num;
+		data->philos[i].status = -1;
 		data->philos[i].eat_cont = 0;
 		data->philos[i].full = false;
 		pthread_mutex_init(&data->philos[i].lock, NULL);
@@ -74,7 +67,6 @@ t_data	*init_data(int argc, char **argv)
 	else
 		data->meals_num = -1;
 	data->finished = false;
-	data->dead = 0;
 	pthread_mutex_init(&data->lock, NULL);
 	pthread_mutex_init(&data->write, NULL);
 	pthread_mutex_init(&data->finish_lock, NULL);

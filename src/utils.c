@@ -6,7 +6,7 @@
 /*   By: mcarneir <mcarneir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 17:26:31 by mcarneir          #+#    #+#             */
-/*   Updated: 2023/10/10 13:21:41 by mcarneir         ###   ########.fr       */
+/*   Updated: 2023/10/20 14:54:14 by mcarneir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,31 +41,24 @@ uint64_t	get_time(void)
 	return ((tv.tv_sec * (uint64_t)1000) + (tv.tv_usec / 1000));
 }
 
-static int	ft_strcmp(const char *s1, const char *s2)
+void	messages(t_philo *philo, int status)
 {
-	int	i;
-
-	i = 0;
-	while ((s1[i] != '\0' || s2[i] != '\0') && s1[i] == s2[i])
-	{
-		i++;
-	}
-	return (s1[i] - s2[i]);
-}
-
-void	messages(char *str, t_philo *philo)
-{
-	uint64_t	time;
-
 	pthread_mutex_lock(&philo->data->write);
-	time = get_time() - philo->data->start_time;
-	if (ft_strcmp(DIED, str) == 0 && philo->data->dead == 0)
-	{
-		printf("%lu %lu %s\n", time, philo->id, str);
-		philo->data->dead = 1;
-	}
-	if (!philo->data->dead)
-		printf("%lu %lu %s\n", time, philo->id, str);
+	if (status == DEATH)
+		printf("%lu %lu died\n",
+			get_time() - philo->data->start_time, philo->id);
+	else if (status == EATING)
+		printf("%lu %lu is eating\n",
+			get_time() - philo->data->start_time, philo->id);
+	else if (status == SLEEPING)
+		printf("%lu %lu is sleeping\n",
+			get_time() - philo->data->start_time, philo->id);
+	else if (status == THINKING)
+		printf("%lu %lu is thinking\n",
+			get_time() - philo->data->start_time, philo->id);
+	else if (status == FORK)
+		printf("%lu %lu has taken a fork\n",
+			get_time() - philo->data->start_time, philo->id);
 	pthread_mutex_unlock(&philo->data->write);
 }
 
